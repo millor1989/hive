@@ -2,13 +2,13 @@
 
 Hive是基于Apache Hadoop的数据仓库基础架构。Hive用于基于普通商用设备的数据存储和处理，并支持大规模的扩展和容错。
 
-Hive支持对大规模的数据进行汇总（summarization），ad-hoc querying和分析。Hive提供了SQL，让用户可以很简单的对数据进行汇总（summarization），ad-hoc querying和分析。同时，Hive SQL还支持集成用户自定的一些分析功能，比如UDFs（User Defined Functions）。
+Hive支持对大规模的数据进行汇总（summarization），即席（ad-hoc）查询和分析。Hive提供了SQL，让用户可以很简单的对数据进行汇总（summarization），即席查询和分析。同时，Hive SQL还支持集成用户自定的一些分析功能，比如 UDFs（User Defined Functions）。
 
-Hive不是用来进行在线事务处理的，它的最佳用途是传统的数据建仓任务。
+Hive 不是用来进行在线事务处理的，它的最佳用途是传统的数据建仓任务。
 
 ### 1、数据单元（Data Units）
 
-Hive的数据按照粒度大小被组织为：
+Hive 的数据按照粒度大小被组织为：
 
 * **Databases**：数据库，用于避免表（tables）、视图（views）、分区（partitions）、字段（columns）等命名冲突的命名空间（namespaces）。数据库也可以用来确保一个或一组用户的安全性。
 * **Tables**：具有相同schema的同质（homogeneous）的数据单元。
@@ -76,7 +76,7 @@ Primitive Type
 
 复杂类型，可以基于基本类型和其它复合类型，使用如下方式构建：
 
-* Structs：使用点”.“号可以访问Struct内部的元素。比如，类型为`STRUCT{a INT;b INT}`的字段c，可以使用`c.a`访问它的属性`a`；
+* Structs：使用点“.”号可以访问Struct内部的元素。比如，类型为`STRUCT{a INT;b INT}`的字段c，可以使用`c.a`访问它的属性`a`；
 * Maps\(key-value tuples\)：使用\['element name'\]访问Map内部的元素。比如，由映射'group'-&gt;gid构成的Map M，可以使用M\['group'\]访问gid的值；
 * Arrays\(indexable lists\)：数组中的元素必须是相同类型。可以使用从0开始的索引访问数组中的元素。比如，有数组A，`['a','b','c']`，A\[1\]返回'b'。
 
@@ -84,11 +84,11 @@ Primitive Type
 
 #### 2.3、时间戳
 
-##### 2.3.1、TimeStamp（”LocalDateTime“语义）
+##### 2.3.1、TimeStamp（“LocalDateTime”语义）
 
 Java的`LocalDateTime`是一个记录日期和时间的时间戳，包含年、月、日、时、分、秒，不带时区。这些时间戳不考虑当地时区，总是有相同的值。（※MySQL的`TimeStamp`是包含时区的）
 
-##### 2.3.2、TimeStamp with local time zone（”Instant“语义）
+##### 2.3.2、TimeStamp with local time zone（“Instant”语义）
 
 Java的`Instant`时间代表了一个UTC时的时间点。读取的时候加上当地的时区。
 
@@ -96,10 +96,10 @@ Java的`Instant`时间代表了一个UTC时的时间点。读取的时候加上�
 
 在Beeline或者Hive CLI中运行如下命令可以显示支持的函数和运算符：
 
-```sql
+```
 SHOW FUNCTIONS;
-DESCRIBE FUNCTION <function_name>;
-DESCRIBE FUNCTION EXTENDED <function_name>;
+DESCRIBE FUNCTION &lt;function_name&gt;;
+DESCRIBE FUNCTION EXTENDED &lt;function_name&gt;;
 ```
 
 **※** Hive的所有关键字都是大小写不敏感的，包括Hive运算符和函名。
@@ -107,6 +107,8 @@ DESCRIBE FUNCTION EXTENDED <function_name>;
 #### 3.1、内置运算符
 
 - **关系运算符**：基于比较结果返回true或false
+
+  
 
   | 关系运算符      | 操作数类型   | 描述                                                         |
   | --------------- | ------------ | ------------------------------------------------------------ |
@@ -124,13 +126,15 @@ DESCRIBE FUNCTION EXTENDED <function_name>;
 
 - **算术运算符**：返回数值类型
 
+  
+
   | 算术运算符 | 操作数类型   | 描述                                                         |
   | ---------- | ------------ | ------------------------------------------------------------ |
   | A `%` B    | 所有数值类型 | 取余。结果类型是A、B类型的父类型                             |
   | A `+` B    | 所有数值类型 | 加法。结果类型是A、B类型的父类型                             |
   | A `&` B    | 所有数值类型 | 位与。结果类型是A、B类型的父类型                             |
   | `~`A       | 所有数值类型 | 按位取反。结果类型是A的类型                                  |
-  | A \| B    | 所有数值类型 | 位或。结果类型是A、B类型的父类型                             |
+  | A &#124;&#124; B | 所有数值类型 | 位或。结果类型是A、B类型的父类型                             |
   | A `^` B    | 所有数值类型 | 按位异或。结果类型是A、B类型的父类型                         |
   | A `/` B    | 所有数值类型 | 除法。结果类型是A、B类型的父类型，如果操作数都是整数，结果是除法的商。 |
   | A `*` B    | 所有数值类型 | 乘法。结果类型是A、B类型的父类型，但是如果乘积会导致溢出，必须把其中一个的类型转换为更高层级的类型。 |
@@ -138,17 +142,21 @@ DESCRIBE FUNCTION EXTENDED <function_name>;
 
 - **逻辑运算符**：返回true或false
 
-  | 逻辑运算符 | 操作数类型 | 描述 |
-  | ---------- | ---------- | ---- |
-  | A `AND` B  | boolean    | 与   |
-  | A `&&` B   | boolean    | 与   |
-  | A `OR` B   | boolean    | 或   |
-  | A \|\| B   | boolean    | 或   |
-  | `NOT` A    | boolean    | 非   |
-  | `!` A      | boolean    | 非   |
+  
+
+  | 逻辑运算符       | 操作数类型 | 描述 |
+  | ---------------- | ---------- | ---- |
+  | A `AND` B        | boolean    | 与   |
+  | A `&&` B         | boolean    | 与   |
+  | A `OR` B         | boolean    | 或   |
+  | A &#124;&#124; B | boolean    | 或   |
+  | `NOT` A          | boolean    | 非   |
+  | `!` A            | boolean    | 非   |
 
 - **复杂类型运算符**：用于访问复杂类型的元素
 
+  
+  
   | 运算符   | 操作数类型                     | 描述                                         |
   | -------- | ------------------------------ | -------------------------------------------- |
   | A`[n]`   | A为`Array`，n为整数            | 返回数组A的第n个元素，n为0表示数组的第一个值 |
@@ -160,6 +168,8 @@ DESCRIBE FUNCTION EXTENDED <function_name>;
 #### 3.2、内置函数
 
 - Hive支持的内置函数（源码`FunctionRegistry.java`中的函数）：
+
+  
 
   | 函数名                                              | 返回值类型 | 描述                                                         |
   | --------------------------------------------------- | ---------- | ------------------------------------------------------------ |
@@ -190,6 +200,8 @@ DESCRIBE FUNCTION EXTENDED <function_name>;
 
 - 内置聚合函数
 
+  
+  
   | 聚合函数名                        | 返回值类型 | 描述                                           |
   | --------------------------------- | ---------- | ---------------------------------------------- |
   | count(\*)，count(1)               | BIGINT     | 返回获取的所有行的数量，包括值为`NULL`的行     |
